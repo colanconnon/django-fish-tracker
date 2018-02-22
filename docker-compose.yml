@@ -1,0 +1,27 @@
+version: '2'
+services:
+  db:
+    image: postgres
+    ports:
+      - "54322:5432"
+  web:
+    build: .
+    restart: always
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/src
+    ports:
+      - "8005:8000"
+    depends_on:
+      - db
+  nginx:
+    restart: always
+    build: ./nginx/.
+    ports:
+        - "80:80"
+    volumes:
+        - /www/static
+    volumes_from:
+        - web
+    links:
+        - web:web
